@@ -1,0 +1,135 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<script>
+ window.onbeforeunload = function() {
+      stopVoice();
+    };
+	   function playWelcomeMessage() {
+        setTimeout(function () {
+            var welcomeMessage = new SpeechSynthesisUtterance('You have reached the page where you can compose and send an email.');
+            window.speechSynthesis.speak(welcomeMessage);
+        }, 1000); // 1000 milliseconds delay (adjust as needed)
+    }
+        function playWelcomeMessage1() {
+            setTimeout(function () {
+    var welcomeMessage = new SpeechSynthesisUtterance("enter receiver's email address");
+    window.speechSynthesis.speak(welcomeMessage);
+        },500);}
+        function playWelcomeMessage2() {
+            setTimeout( function () {
+    var welcomeMessage = new SpeechSynthesisUtterance('enter subject');
+    window.speechSynthesis.speak(welcomeMessage);
+    },500);
+		}
+        function playWelcomeMessage3() {
+            setTimeout( function () {
+    var welcomeMessage = new SpeechSynthesisUtterance('Type message here...');
+    window.speechSynthesis.speak(welcomeMessage);
+    },500);
+}
+    function stopVoice() {
+      if (speechSynthesisUtterance && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+   
+</script>
+<body onmouseenter="playWelcomeMessage()">
+	<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark navbar-custom">
+        <div class="container"><a class="navbar-brand" style="font-size:150%;">VOICE BASED EMAIL FOR THE BLIND</a>
+            
+        </div>
+    </nav>
+    <header class="masthead text-left text-white">
+    <div class="masthead-content">
+        <div class="container">
+            <center>
+            <h4 class="masthead-heading mb-0" style = "margin-top: -100px; font-size: 60px;color:black;">COMPOSE MAIL</h4>
+            </center>
+                
+            <br>
+	
+		<h4 class="sent-notification"></h4>
+
+		<form action="{% url 'homepage:compose' %}" method="POST" >
+			
+		
+            {% csrf_token %}
+			<b><label style="color:black;font-size:30px" >RECIEPIENT'S EMAIL ID : </label></b><br>
+			<input id="email" type="text" onfocus="playWelcomeMessage1()" id="email" name="email" style="width: 100%;height: 50px;border-radius:5px " placeholder="Enter Email" required value="{{compose.recipient}}">
+			<br><br>
+
+			<b><label style="color:black;font-size:30px" >SUBJECT : </label></b><br>
+			<input id="subject" type="text" onfocus="playWelcomeMessage2()" id="subject" name="subject" style="width: 100%;height: 50px;border-radius:5px " placeholder=" Enter Subject" required value="{{compose.subject}}"> 
+			<br><br>
+
+			<b><label style="color:black;font-size:30px" >BODY : </label></b><br>
+			<input  type="text" onfocus="playWelcomeMessage3()" id="message" name="message"  rows="5" style="width: 100%;height: 200px;border-radius:5px " placeholder="Type Message"required value="Hello, this is a test email!">
+			<br>
+
+            <center>
+            <input class="btn btn-primary btn-xl rounded-pill mt-5" id="loginBtn" role="button"   type="submit" value="SEND MAIL" style="background-color:black;" >
+            </center>  
+		</form>
+        </div>
+    </div>
+    <div class="bg-circle-1 bg-circle"></div>
+    <div class="bg-circle-2 bg-circle"></div>
+    <div class="bg-circle-3 bg-circle"></div>
+    <div class="bg-circle-4 bg-circle"></div>
+</header>
+<footer class="py-5 bg-black">
+	<div class="container">
+		<p class="text-center text-white m-0 small">Copyright&nbsp;© Voice Based Email&nbsp;</p>
+	</div>
+</footer>
+	<script>
+
+const usernameInput = document.getElementById('email');
+        const subjectInput = document.getElementById('subject');
+        const messagesInput = document.getElementById('message');
+        const loginBtn = document.getElementById('loginBtn');
+
+        const recognition = new webkitSpeechRecognition() 
+        recognition.continuous = true;
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().replace(/\s/g, '');
+            console.log(transcript)
+            if (transcript.includes('email')) {
+                usernameInput.focus();
+            } else if (transcript.includes('subject')) {
+                subjectInput.focus();
+            } else if (transcript.includes('message')) {
+                messagesInput.focus();
+            } else if (transcript.includes('submit')) {
+                loginBtn.click();
+            } else if (transcript.includes('back')) {
+              window.location.href = '{% url "homepage:options" %}';
+            } else {
+                if (usernameInput === document.activeElement) {
+                    usernameInput.value = transcript.toLowerCase();
+                } else  if (subjectInput === document.activeElement) {
+                    subjectInput.value = transcript.toLowerCase();
+				}
+                 else  if (messagesInput === document.activeElement) {
+                    messagesInput.value = transcript.toLowerCase();
+				}
+            }
+        };
+
+        recognition.onend = () => {
+            recognition.start();
+            
+        };
+
+        window.addEventListener('load', () => {
+            recognition.start();
+        });
+		
+	
+</script>
+
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<script>
+	 function stopVoice() {
+   if (speechSynthesisUtterance && 'speechSynthesis' in window) {
+	 window.speechSynthesis.cancel();
+   }
+ }
+ window.onbeforeunload = function() {
+   stopVoice();
+ };
+		
+</script>
+	<body >
+		<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark navbar-custom">
+			<div class="container"><a class="navbar-brand" style="font-size:150%;">VOICE BASED EMAIL FOR THE BLIND</a>
+				
+			</div>
+		</nav>
+		<header class="masthead text-left text-white">
+			<div class="masthead-content">
+				<div class="container" >
+					<center>
+						<h4 class="masthead-heading mb-0" style = "margin-top: -100px; font-size: 90px;color:black;">MENU PAGE</h4>			
+						<br>
+    
+						<h2> What would you like to do? <h2><br>
+						</center>
+					
+				<div container>
+				<div class ="options">
+
+				
+				<table align="center" >
+					<tr>
+						<td>
+							<a href="{% url 'homepage:compose' %}"> 
+								<input class="btn btn-primary btn-xl rounded-pill mt-5"
+								class="button" role="button"
+								style="width: 250px; background-color: black;" type="submit" 
+								value="COMPOSE"  style="background-color: black;"></a>
+						</td>
+					</tr>
+						
+					<tr>
+						<td>
+							<a href="{% url 'homepage:inbox' %}"> 
+								<input class="btn btn-primary btn-xl rounded-pill mt-5"
+								 role="button"
+								 style="width: 250px; background-color: black;" type="submit" 
+								value="INBOX" ></a>
+						</td>
+
+					</tr>
+						
+					<tr>
+						<td>
+							<a href="{% url 'homepage:sent' %}"> 
+								<input class="btn btn-primary btn-xl rounded-pill mt-5" 
+								role="button" 
+								style="width: 250px; background-color: black;" type="submit"  
+								value="SENT"></a>
+						</td>
+					</tr>
+						
+					<tr>
+						<td>
+							<a href="{% url 'homepage:trash' %}"> 
+								<input class="btn btn-primary btn-xl rounded-pill mt-5"
+								role="button" 
+								style="width: 250px; background-color: black;"  type="submit" 
+								value="TRASH"></a>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="{% url 'homepage:login' %}"> 
+								<input class="btn btn-primary btn-xl rounded-pill mt-5"
+								role="button"
+								style="width: 250px; background-color: black;"  type="submit" 
+								value="LOGOUT"></a>
+						</td>
+					</tr>
+						
+
+				</table>
+			</div>
+		</div>
+						
+		</div>
+			</div>
+			<div class="bg-circle-1 bg-circle"></div>
+			<div class="bg-circle-2 bg-circle"></div>
+			<div class="bg-circle-3 bg-circle"></div>
+			<div class="bg-circle-4 bg-circle"></div>
+		</header>
+		<footer class="py-5 bg-black">
+			<div class="container">
+				<p class="text-center text-white m-0 small">Copyright&nbsp;© Voice Based Email&nbsp;</p>
+			</div>
+		</footer>
+		<script>
+
+			var recognition = new webkitSpeechRecognition();
+			recognition.continuous = true;
+			recognition.lang = 'en-US';
+			
+			recognition.onresult = function(event) {
+			  var result = event.results[event.results.length - 1][0].transcript.toLowerCase();
+			  console.log("result",result);
+			  var currentQuestionIndex=0;
+			   if (result.includes('compose')) {
+				  // Redirect to the home page
+				  window.location.href = '{% url "homepage:compose" %}';
+			  }else if (result.includes('inbox')) {
+				  // Redirect to the home page
+				  window.location.href = '{% url "homepage:inbox" %}';
+			  }
+			  else if (result.includes('send')) {
+				  // Redirect to the home page
+				  window.location.href = '{% url "homepage:sent" %}';
+			  }
+			  else if (result.includes('trash')) {
+				  // Redirect to the home page
+		  
+				  window.location.href = '{% url "homepage:trash" %}';
+			  }
+			
+			  else if (result.includes('logout')) {
+				  // Redirect to the home page
+				  window.location.href = '{% url "homepage:login" %}';
+			  }
+		
+			
+			 
+		  };
+		   recognition.onerror = function(event) {
+				console.error('Speech recognition error:', event.error);
+			};
+function playWelcomeMessage() {
+	 setTimeout(function () {
+		 var welcomeMessage = new SpeechSynthesisUtterance('You are logged into your account. What would you like to do ?  ,');
+		 window.speechSynthesis.speak(welcomeMessage);
+	 }, 2000); // 1000 milliseconds delay (adjust as needed)
+ }
+ playWelcomeMessage();
+function playWelcomeMessage1() {
+	 setTimeout(function () {
+		 var welcomeMessage2 = new SpeechSynthesisUtterance('To compose an email say compose. To open Inbox folder say Inbox. To open Sent folder say Sent.  To Logout say Logout.  ,');
+		 
+		 window.speechSynthesis.speak(welcomeMessage2);
+	 }, 2000); // 1000 milliseconds delay (adjust as needed)
+ }
+ playWelcomeMessage1();
+function playWelcomeMessage3() {
+	 setTimeout(function () {
+		 var welcomeMessage3 = new SpeechSynthesisUtterance('Enter your desired action ,');
+		 
+	 window.speechSynthesis.speak(welcomeMessage3);
+	 }, 2000); // 1000 milliseconds delay (adjust as needed)
+ }
+ playWelcomeMessage3();
+  recognition.onend = function() {
+      // Restart recognition when it ends
+      recognition.start();
+  };
+  recognition.start();
+ // Stop speech when leaving the page
+	
+	</script>
+
+{% endblock %}

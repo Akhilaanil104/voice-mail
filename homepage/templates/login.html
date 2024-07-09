@@ -1,0 +1,135 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+<script>
+	   function playWelcomeMessage() {
+        setTimeout(function () {
+            var welcomeMessage = new SpeechSynthesisUtterance('Welcome to our Voice Based Email. Login with your email account in order to continue.');
+            window.speechSynthesis.speak(welcomeMessage);
+        }, 1000); // 1000 milliseconds delay (adjust as needed)
+    }
+        function playWelcomeMessage1() {
+            setTimeout(function () {
+    var welcomeMessage = new SpeechSynthesisUtterance('enter your email');
+    window.speechSynthesis.speak(welcomeMessage);
+        },500);}
+        function playWelcomeMessage2() {
+            setTimeout( function () {
+    var welcomeMessage = new SpeechSynthesisUtterance('enter your password');
+    window.speechSynthesis.speak(welcomeMessage);
+    },500);
+}
+    function stopVoice() {
+      if (speechSynthesisUtterance && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    // Stop speech when leaving the page
+    window.onbeforeunload = function() {
+      stopVoice();
+    };
+</script>
+    <body onmouseenter="playWelcomeMessage()" >
+	
+		<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark navbar-custom">
+			<div class="container"><a class="navbar-brand" style="font-size:150%;">VOICE BASED EMAIL FOR THE BLIND</a>
+				
+			</div>
+		</nav>
+		<header class="masthead text-center text-white">
+			<div class="masthead-content">
+				<div class="container">
+					<h1  style="margin-top:-60px; font-size:60px;color: black;" >LOGIN HERE</h1>
+					
+				<form  method="POST">
+					<br><br><br><br>
+					<div class="container" >
+						
+						
+						<div class="login" id = "here">
+							<!-- {% comment %} <script> 
+								$(document).ready(function(){
+								setInterval(function(){
+									  $("#here").load(window.location.href + " #here" );
+								}, 1000);
+								});
+								</script> {% endcomment %} -->
+							
+							{% csrf_token %}
+							  <h3 style="color: black;text-align: left;margin-left: 10%;">Email:</h3>
+					
+							<input type="text" onfocus="playWelcomeMessage1()"  placeholder="Email" id="email" name="email" required value={{detail.email}} >
+					
+							  <br><br>
+							  <h3 style="color: black;text-align: left;margin-left: 10%;">Password: </h3>
+							 <input type="password" onfocus="playWelcomeMessage2()" placeholder="Password" id="password" name="password" required value={{detail.password}} >
+					
+							   <a href="{% url 'homepage:options' %}"> 
+								<input  class="btn btn-primary btn-xl rounded-pill mt-5" role="button" type="submit" value="LOGIN" id="loginBtn" style="background-color: black;"></a>
+							  <br>
+							  
+							  {{error}}
+							</div>
+						</div>							   
+					</div>
+				</div>
+			</form>
+				</div>
+			</div>
+			<div class="bg-circle-1 bg-circle"></div>
+			<div class="bg-circle-2 bg-circle"></div>
+			<div class="bg-circle-3 bg-circle"></div>
+			<div class="bg-circle-4 bg-circle"></div>
+		</header>
+
+		<script>
+
+const usernameInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+
+        const recognition = new webkitSpeechRecognition() 
+        recognition.continuous = true;
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().replace(/\s/g, '');
+            console.log(transcript)
+            if (transcript.includes('email')) {
+                usernameInput.focus();
+            } else if (transcript.includes('password')) {
+                passwordInput.focus();
+            } else if (transcript.includes('login')) {
+                loginBtn.click();
+            } else if (transcript.includes('back')) {
+              window.location.href = '{% url "homepage:login" %}';
+            } else {
+                if (usernameInput === document.activeElement) {
+                    usernameInput.value = transcript.toLowerCase();
+                } else if (passwordInput === document.activeElement) {
+                    passwordInput.value = transcript;
+                }
+            }
+        };
+
+        recognition.onend = () => {
+            recognition.start();
+            
+        };
+
+        window.addEventListener('load', () => {
+            recognition.start();
+        });
+		
+				
+			
+			</script>
+			
+			<footer class="py-5 bg-black">
+				<div class="container">
+					<p class="text-center text-white m-0 small">Copyright&nbsp;© Voice Based Email&nbsp;</p>
+				</div>
+			</footer>
+
+
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+	<script>
+ window.onbeforeunload = function() {
+      stopVoice();
+    };
+	   function playWelcomeMessage() {
+        setTimeout(function () {
+            var welcomeMessage = new SpeechSynthesisUtterance('You have reached your trash emails ');
+            window.speechSynthesis.speak(welcomeMessage);
+        }, 1000); // 1000 milliseconds delay (adjust as needed)
+    }
+        
+    function stopVoice() {
+      if (speechSynthesisUtterance && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+   
+</script>
+
+	<body onmouseenter="playWelcomeMessage()" >
+		<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark navbar-custom">
+			<div class="container">
+			<a class="navbar-brand" style="font-size:150%;">VOICE BASED EMAIL FOR THE BLIND</a>
+			<a onclick="startvoice()" class="btn btn-warning" style="font-size:100%;margin-left:40%;width:200px;">Read</a>
+					<a onclick="stopVoice()" class="btn btn-warning ml-2" style="font-size:100%;">stop </a>
+					<a href="{% url 'homepage:options' %}" class="btn btn-warning ml-2" style="font-size:100%;">Back</a>
+				
+			</div>
+		</nav>
+		<header class="masthead text-left text-white">
+			<div class="masthead-content">
+				<div class="container" >
+					<center>
+						<h4 class="masthead-heading mb-0" style = "margin-top: -100px; font-size: 60px;color:black;">Trash MAILS PAGE</h4>			
+						<br>
+						{% comment %} <h2> What would you like to do? <h2><br>
+						 <h1>Sent Emails</h1> {% endcomment %}
+    <ul>
+    {% for email in sent_emails %}
+        <li id="result">
+            <strong>Subject:</strong> {{ email.subject }}<br>
+            <strong>From:</strong> {{ email.from }}<br>
+            <strong>To:</strong> {{ email.to }}<br>
+            <strong>Date:</strong> {{ email.date }}<br>
+            <strong>Body:</strong><br>
+            <pre>{{ email.body }}</pre>
+        </li>
+    {% endfor %}
+    </ul>
+					</center>
+					
+
+				
+				{% comment %} <table align="center" >
+					<tr>
+						<td>
+							
+								<input href="inbox.html"class="btn btn-primary btn-xl rounded-pill mt-5"
+								 role="button"
+								 style="width: 250px; background-color: black;" type="submit" 
+								value="SEARCH" >
+						</td>
+
+					</tr>
+						
+					<tr>
+						<td>
+							
+								<input href="options.html"class="btn btn-primary btn-xl rounded-pill mt-5" 
+								role="button" 
+								style="width: 250px; background-color: black;" type="submit"  
+								value="BACK">
+						</td>
+					</tr>
+						
+					
+					<tr>
+						<td>
+							
+								<input href="login.html"class="btn btn-primary btn-xl rounded-pill mt-5"
+								role="button"
+								style="width: 250px; background-color: black;"  type="submit" 
+								value="LOGOUT">
+						</td>
+					</tr>
+						
+
+				</table>
+			 {% endcomment %}
+				</div>
+			</div>
+			<div class="bg-circle-1 bg-circle"></div>
+			<div class="bg-circle-2 bg-circle"></div>
+			<div class="bg-circle-3 bg-circle"></div>
+			<div class="bg-circle-4 bg-circle"></div>
+		</header>
+		<footer class="py-5 bg-black">
+			<div class="container">
+				<p class="text-center text-white m-0 small">Copyright&nbsp;© Voice Based Email&nbsp;</p>
+			</div>
+		</footer>
+	<script>
+	
+    var speechSynthesisUtterance;
+
+    function startvoice() {
+      var resultText = document.getElementById('result').innerText ;
+
+      if ('speechSynthesis' in window) {
+        speechSynthesisUtterance = new SpeechSynthesisUtterance(resultText);
+        speechSynthesisUtterance.lang = 'en-US';
+
+        window.speechSynthesis.speak(speechSynthesisUtterance);
+      } else {
+        alert('Text-to-speech is not supported in your browser.');
+      }
+    }
+
+    function stopVoice() {
+      if (speechSynthesisUtterance && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    // Stop speech when leaving the page
+    window.onbeforeunload = function() {
+      stopVoice();
+    };
+
+var recognition = new webkitSpeechRecognition();
+			recognition.continuous = true;
+			recognition.lang = 'en-US';
+			
+			recognition.onresult = function(event) {
+			  var result = event.results[event.results.length - 1][0].transcript.toLowerCase();
+			  console.log("result",result);
+			  var currentQuestionIndex=0;
+			   if (result.includes('read')) {
+				  // Redirect to the home page
+				  startvoice();
+			  }else if (result.includes('stop')) {
+				  // Redirect to the home page
+				  stopVoice();
+			  }
+			  else if (result.includes('back')) {
+				  // Redirect to the home page
+				  window.location.href = '{% url "homepage:options" %}';
+			  }
+			  
+			
+			 
+		  };
+		   recognition.onerror = function(event) {
+				console.error('Speech recognition error:', event.error);
+			};
+recognition.onend = () => {
+            recognition.start();
+            
+        };
+
+        window.addEventListener('load', () => {
+            recognition.start();
+        });
+  </script>
+
+{% endblock %}
